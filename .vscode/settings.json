@@ -93,6 +93,20 @@
     "__verbose_abort": "cpp",
     "ios": "cpp",
     "locale": "cpp",
-    "map": "cpp"
+    "map": "cpp",
+    "any": "cpp",
+    "charconv": "cpp",
+    "codecvt": "cpp",
+    "complex": "cpp",
+    "deque": "cpp",
+    "forward_list": "cpp",
+    "unordered_set": "cpp",
+    "ranges": "cpp",
+    "span": "cpp",
+    "typeindex": "cpp",
+    "valarray": "cpp",
+    "strstream": "cpp",
+    "future": "cpp",
+    "cfenv": "cpp"
   }
 }
