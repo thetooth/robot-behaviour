@@ -27,9 +27,9 @@ namespace BT
         Manager(std::string url);
         ~Manager();
 
-        std::string getID();
-        std::string getName();
-        std::string getDescription();
+        std::string getID() const;
+        std::string getName() const;
+        std::string getDescription() const;
         void getBehaviour(std::string id);
         BrainTree::BehaviorTree getExecutionTree();
         std::map<std::string, Model::Node> getNodes();

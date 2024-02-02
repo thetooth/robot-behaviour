@@ -29,17 +29,17 @@ void BT::Manager::getBehaviour(std::string id)
     execMutex.unlock();
 }
 
-std::string BT::Manager::getID()
+std::string BT::Manager::getID() const
 {
     return behaviour.id;
 }
 
-std::string BT::Manager::getName()
+std::string BT::Manager::getName() const
 {
     return behaviour.name;
 }
 
-std::string BT::Manager::getDescription()
+std::string BT::Manager::getDescription() const
 {
     return behaviour.description;
 }
