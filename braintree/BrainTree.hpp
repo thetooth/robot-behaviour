@@ -10,8 +10,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <nlohmann/json.hpp>
-
 namespace BrainTree
 {
     class Blackboard
@@ -710,25 +708,6 @@ namespace BrainTree
                     return Status::Success;
                 }
             }
-        }
-    };
-
-    inline void to_json(nlohmann::json &j, const Node::Status &s)
-    {
-        switch (s)
-        {
-        case Node::Status::Invalid:
-            j = "Invalid";
-            break;
-        case Node::Status::Success:
-            j = "Success";
-            break;
-        case Node::Status::Failure:
-            j = "Failure";
-            break;
-        case Node::Status::Running:
-            j = "Running";
-            break;
         }
     };
 
