@@ -21,6 +21,7 @@ namespace Model
     {
         std::string id;
         std::string name;
+        bool run;
         std::vector<NodeStatus> nodes;
     };
     void to_json(json &j, const Status &p);
