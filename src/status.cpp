@@ -2,11 +2,12 @@
 
 void BT::Manager::sendNodeStatus()
 {
-    json j = json::array();
+    auto status = Model::Status{.id = getID(), .name = getName()};
     for (auto &[id, node] : execNodes)
     {
-        j.push_back({{"id", id}, {"status", node->getStatus()}});
+        status.nodes.push_back({.id = id, .status = int(node->getStatus())});
     }
+    json j = status;
     publish("behaviour.status", j);
 }
 

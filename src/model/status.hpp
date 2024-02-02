@@ -10,6 +10,21 @@ namespace Model
 {
     using json = nlohmann::json;
 
+    struct NodeStatus
+    {
+        std::string id;
+        int status;
+    };
+    void to_json(json &j, const NodeStatus &p);
+
+    struct Status
+    {
+        std::string id;
+        std::string name;
+        std::vector<NodeStatus> nodes;
+    };
+    void to_json(json &j, const Status &p);
+
     namespace IK
     {
         enum Result

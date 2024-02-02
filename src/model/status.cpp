@@ -1,5 +1,15 @@
 #include "status.hpp"
 
+void Model::to_json(json &j, const NodeStatus &p)
+{
+    j = json{{"id", p.id}, {"status", p.status}};
+}
+
+void Model::to_json(json &j, const Status &p)
+{
+    j = json{{"id", p.id}, {"name", p.name}, {"nodes", p.nodes}};
+}
+
 void Model::IK::from_json(const json &j, Pose &p)
 {
     p.x = j.value("x", 0.0);
