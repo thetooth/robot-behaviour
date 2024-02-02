@@ -14,7 +14,7 @@ bool Control::NC::sendStop()
     return publish("motion.command", j);
 }
 
-bool Control::NC::sendMoveTo(Model::Pose pose)
+bool Control::NC::sendMoveTo(Model::IK::Pose pose)
 {
     json j = R"({"command": "goto"})"_json;
     j["pose"] = pose;

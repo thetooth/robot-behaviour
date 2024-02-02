@@ -66,7 +66,7 @@ std::map<std::string, Model::Edge> BT::Manager::getEdges()
 
 void BT::Manager::receiveStatus(json payload)
 {
-    status = payload.get<Model::Status>();
+    status = payload.get<Model::Robot::Status>();
 }
 
 void BT::Manager::receiveCommand(json payload)

@@ -10,7 +10,7 @@ void BT::Manager::sendNodeStatus()
     publish("behaviour.status", j);
 }
 
-bool BT::Manager::inPosition(Model::Pose pose)
+bool BT::Manager::inPosition(Model::IK::Pose pose)
 {
     auto otg = status.otg.result == 1;
     auto currentPose = status.pose;

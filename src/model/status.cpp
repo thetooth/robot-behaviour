@@ -1,6 +1,6 @@
 #include "status.hpp"
 
-void Model::from_json(const json &j, Pose &p)
+void Model::IK::from_json(const json &j, Pose &p)
 {
     p.x = j.value("x", 0.0);
     p.y = j.value("y", 0.0);
@@ -17,7 +17,7 @@ void Model::from_json(const json &j, Pose &p)
     // p.phiVelocity = j.at("phiVelocity").get<double>();
 }
 
-void Model::to_json(json &j, const Pose &p)
+void Model::IK::to_json(json &j, const Pose &p)
 {
     j = json{
         {"x", p.x},
@@ -35,13 +35,13 @@ void Model::to_json(json &j, const Pose &p)
     };
 }
 
-void Model::from_json(const json &j, OTGStatus &p)
+void Model::Robot::from_json(const json &j, OTGStatus &p)
 {
     p.result = j.at("result").get<int>();
-    p.kinematicResult = static_cast<Result>(j.at("kinematicResult").get<int>());
+    p.kinematicResult = static_cast<IK::Result>(j.at("kinematicResult").get<int>());
 }
 
-void Model::from_json(const json &j, EtherCATStatus &p)
+void Model::Robot::from_json(const json &j, EtherCATStatus &p)
 {
     p.interval = j.at("interval").get<int64_t>();
     p.sync0 = j.at("sync0").get<int64_t>();
@@ -49,7 +49,7 @@ void Model::from_json(const json &j, EtherCATStatus &p)
     p.integral = j.at("integral").get<int64_t>();
 }
 
-void Model::from_json(const json &j, Status &p)
+void Model::Robot::from_json(const json &j, Status &p)
 {
     p.run = j.at("run").get<bool>();
     p.alarm = j.at("alarm").get<bool>();
@@ -57,5 +57,5 @@ void Model::from_json(const json &j, Status &p)
     p.state = j.at("state").get<std::string>();
     p.otg = j.at("otg").get<OTGStatus>();
     p.ethercat = j.at("ethercat").get<EtherCATStatus>();
-    p.pose = j.at("pose").get<Pose>();
+    p.pose = j.at("pose").get<IK::Pose>();
 }

@@ -14,7 +14,7 @@ namespace BT
       public:
         MoveTo(json data, BT::Manager *m) : manager(m)
         {
-            pose = data["pose"].get<Model::Pose>();
+            pose = data["pose"].get<Model::IK::Pose>();
         }
         void initialize() override
         {
@@ -72,7 +72,7 @@ namespace BT
         }
 
       private:
-        Model::Pose pose;
+        Model::IK::Pose pose;
         BT::Manager *manager;
         bool hasMoved = false;
         std::chrono::nanoseconds startTimestamp;

@@ -25,7 +25,7 @@ namespace Control
 
         bool sendStart();
         bool sendStop();
-        bool sendMoveTo(Model::Pose pose);
+        bool sendMoveTo(Model::IK::Pose pose);
         json getBehaviour(std::string id);
 
       private:

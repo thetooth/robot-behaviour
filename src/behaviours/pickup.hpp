@@ -78,8 +78,8 @@ namespace BT
       private:
         double height;
         int step;
-        Model::Pose origin;
-        Model::Pose target;
+        Model::IK::Pose origin;
+        Model::IK::Pose target;
         BT::Manager *manager;
         bool hasMoved = false;
         std::chrono::nanoseconds startTimestamp;

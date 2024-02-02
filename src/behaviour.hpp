@@ -39,9 +39,9 @@ namespace BT
 
         void start();
         void stop();
-        bool inPosition(Model::Pose pose);
+        bool inPosition(Model::IK::Pose pose);
 
-        Model::Status status;
+        Model::Robot::Status status;
         Model::Behaviour behaviour;
 
       private:
