@@ -1,7 +1,7 @@
-option(ROBOTCTRL_ADDR_SANITIZE "Build with fsanitize=address" OFF)
+option(ROBOTBEHAVIOUR_ADDR_SANITIZE "Build with fsanitize=address" OFF)
 
-set(sources_list
-    main.cpp
+file(GLOB sources_list
+    *.cpp
 )
 
 # Getting all the .cpp files in any src/directory.
@@ -46,7 +46,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
             -Wno-nested-anon-types
             -Wno-division-by-zero
         )
-        IF (ROBOTCTRL_ADDR_SANITIZE)
+        IF (ROBOTBEHAVIOUR_ADDR_SANITIZE)
             target_compile_definitions(${PROJECT_NAME} PUBLIC WITH_ADDR_SANITIZE)
             list(APPEND CUSTOM_COMPILE_OPTIONS
                 -fsanitize=address

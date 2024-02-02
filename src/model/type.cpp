@@ -1,6 +1,6 @@
 #include "type.hpp"
 
-void Deserializer::from_json(const json &j, Type &t)
+void Model::from_json(const json &j, Type &t)
 {
     if (j == "start")
     {
@@ -29,6 +29,10 @@ void Deserializer::from_json(const json &j, Type &t)
     else if (j == "moveTo")
     {
         t = Type::MoveTo;
+    }
+    else if (j == "pickUp")
+    {
+        t = Type::PickUp;
     }
     else
     {

@@ -5,7 +5,7 @@
     "-DNATS_BUILD_EXAMPLES=OFF",
     "-DNATS_BUILD_LIB_SHARED=OFF",
     "-DNATS_BUILD_OPENSSL_STATIC_LIBS=ON",
-    "-DROBOTCTRL_ADDR_SANITIZE=OFF"
+    "-DROBOTBEHAVIOUR_ADDR_SANITIZE=ON"
   ],
   "files.associations": {
     "**/defaults/**/*": "ansible",

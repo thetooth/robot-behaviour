@@ -1,16 +1,24 @@
 #pragma once
 
-#include "../bt.hpp"
-#include "spdlog/spdlog.h"
+#include <BrainTree.hpp>
+#include <spdlog/spdlog.h>
 
 namespace BT
 {
+    using namespace BrainTree;
     class Start : public Decorator
     {
+      public:
+        Start([[maybe_unused]] json data, BT::Manager *m) : manager(m)
+        {
+        }
+        void initialize() override
+        {
+            // manager->sendStart();
+        }
         Status update() override
         {
-            spdlog::info("Start");
-
+            spdlog::trace("Start");
             if (hasChild())
             {
                 return child->tick();
@@ -18,5 +26,8 @@ namespace BT
 
             return Status::Failure;
         }
+
+      private:
+        [[maybe_unused]] BT::Manager *manager;
     };
 } // namespace BT

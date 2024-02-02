@@ -6,7 +6,7 @@
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
-namespace Deserializer
+namespace Model
 {
     namespace fmt = spdlog::fmt_lib;
     using json = nlohmann::json;
@@ -20,6 +20,7 @@ namespace Deserializer
         Action,
         Condition,
         MoveTo,
+        PickUp
     };
     void from_json(const json &j, Type &t);
-} // namespace Deserializer
+} // namespace Model

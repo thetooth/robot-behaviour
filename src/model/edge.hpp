@@ -5,7 +5,7 @@
 
 #include <nlohmann/json.hpp>
 
-namespace Deserializer
+namespace Model
 {
     using json = nlohmann::json;
 
@@ -17,4 +17,4 @@ namespace Deserializer
         std::string target;
     };
     void from_json(const json &j, Edge &e);
-} // namespace Deserializer
+} // namespace Model
