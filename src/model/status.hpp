@@ -21,6 +21,7 @@ namespace Model
     {
         std::string id;
         std::string name;
+        int64_t revision;
         bool run;
         std::vector<NodeStatus> nodes;
     };

@@ -65,7 +65,7 @@ bool Control::NC::publish(std::string subject, json message)
     return true;
 }
 
-nlohmann::json Control::NC::getBehaviour(std::string id)
+std::pair<int64_t, nlohmann::json> Control::NC::getBehaviour(std::string id)
 {
     kvEntry *res = nullptr;
     auto jsStatus = kvStore_Get(&res, kv, ("data." + id).c_str());
@@ -74,7 +74,8 @@ nlohmann::json Control::NC::getBehaviour(std::string id)
         spdlog::critical("Failed to get JetStream key-value store entries");
         return json();
     }
+    auto rev = kvEntry_Revision(res);
     auto payload = json::parse(kvEntry_ValueString(res));
     kvEntry_Destroy(res);
-    return payload;
+    return {rev, payload};
 }

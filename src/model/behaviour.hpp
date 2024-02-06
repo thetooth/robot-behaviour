@@ -13,6 +13,9 @@ namespace Model
     using json = nlohmann::json;
     struct Behaviour
     {
+        std::map<std::string, Model::Node> getNodes();
+        std::map<std::string, Model::Edge> getEdges();
+
         std::string id;
         std::string name;
         std::string description;

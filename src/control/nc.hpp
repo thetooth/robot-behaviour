@@ -25,8 +25,9 @@ namespace Control
 
         bool sendStart();
         bool sendStop();
+        bool sendReset();
         bool sendMoveTo(Model::IK::Pose pose);
-        json getBehaviour(std::string id);
+        std::pair<int64_t, json> getBehaviour(std::string id);
 
       private:
         natsConnection *nc = nullptr;

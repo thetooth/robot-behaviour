@@ -9,24 +9,9 @@ BT::Manager::~Manager()
     execNodes.clear();
 }
 
-void BT::Manager::getBehaviour(std::string id)
+int64_t BT::Manager::getRevision() const
 {
-    execMutex.lock();
-    try
-    {
-        behaviour = Control::NC::getBehaviour(id).get<Model::Behaviour>();
-        tree = getExecutionTree();
-    }
-    catch (std::exception &e)
-    {
-        spdlog::error("Error: {}", e.what());
-        execMutex.unlock();
-        return;
-    }
-    spdlog::info("Behaviour: {} {}", getName(), getID());
-    spdlog::info("{}", getDescription());
-    ready = true;
-    execMutex.unlock();
+    return revision;
 }
 
 std::string BT::Manager::getID() const
@@ -44,24 +29,32 @@ std::string BT::Manager::getDescription() const
     return behaviour.description;
 }
 
-std::map<std::string, Model::Node> BT::Manager::getNodes()
+std::pair<int64_t, Model::Behaviour> BT::Manager::getBehaviour(std::string id)
 {
-    std::map<std::string, Model::Node> nodes;
-    for (auto &&node : behaviour.nodes)
-    {
-        nodes[node.id] = node;
-    }
-    return nodes;
+    auto [r, b] = Control::NC::getBehaviour(id);
+    return {r, b.get<Model::Behaviour>()};
 }
 
-std::map<std::string, Model::Edge> BT::Manager::getEdges()
+void BT::Manager::load(std::string id)
 {
-    std::map<std::string, Model::Edge> edges;
-    for (auto &&edge : behaviour.edges)
+    execMutex.lock();
+    try
     {
-        edges[edge.id] = edge;
+        auto [r, b] = Control::NC::getBehaviour(id);
+        revision = r;
+        behaviour = b.get<Model::Behaviour>();
+        tree = getExecutionTree(behaviour);
     }
-    return edges;
+    catch (std::exception &e)
+    {
+        spdlog::error("Error: {}", e.what());
+        execMutex.unlock();
+        return;
+    }
+    spdlog::info("Behaviour: {} {} rev {}", getName(), getID(), getRevision());
+    spdlog::info("{}", getDescription());
+    ready = true;
+    execMutex.unlock();
 }
 
 void BT::Manager::receiveStatus(json payload)
@@ -81,18 +74,14 @@ void BT::Manager::receiveCommand(json payload)
         stop();
         break;
     case Model::Command::Reset:
-        stop();
-        for (auto &[id, node] : execNodes)
-        {
-            node->reset();
-        }
+        reset();
         break;
     case Model::Command::Load: {
         auto id = payload.value("id", std::string(""));
         spdlog::debug("Load {}", id);
         if (!id.empty())
         {
-            getBehaviour(payload["id"].get<std::string>());
+            load(id);
         }
     }
     break;
@@ -103,8 +92,7 @@ void BT::Manager::start()
 {
     if (ready)
     {
-        run = true;
-        sendStart();
+        run = sendStart();
     }
 }
 
@@ -112,4 +100,13 @@ void BT::Manager::stop()
 {
     run = false;
     sendStop();
+}
+
+void BT::Manager::reset()
+{
+    sendReset();
+    for (auto &[id, node] : execNodes)
+    {
+        node->reset();
+    }
 }

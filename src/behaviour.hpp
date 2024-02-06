@@ -21,24 +21,26 @@ namespace BT
 {
     using json = nlohmann::json;
 
-    class Manager : public Control::NC
+    class Manager : public Control::NC, public std::enable_shared_from_this<Manager>
     {
       public:
         Manager(std::string url);
         ~Manager();
 
+        int64_t getRevision() const;
         std::string getID() const;
         std::string getName() const;
         std::string getDescription() const;
-        void getBehaviour(std::string id);
-        BrainTree::BehaviorTree getExecutionTree();
-        std::map<std::string, Model::Node> getNodes();
-        std::map<std::string, Model::Edge> getEdges();
+        void load(std::string id);
+        std::pair<int64_t, Model::Behaviour> getBehaviour(std::string id);
+        BrainTree::BehaviorTree getExecutionTree(Model::Behaviour behaviour);
+
         void receiveStatus(json payload);
         void receiveCommand(json payload);
 
         void start();
         void stop();
+        void reset();
         bool inPosition(Model::IK::Pose pose);
 
         Model::Robot::Status status;
@@ -48,6 +50,7 @@ namespace BT
         void execute();
         void sendNodeStatus();
 
+        int64_t revision = 0;
         BrainTree::BehaviorTree tree;
         std::map<std::string, std::shared_ptr<BrainTree::Node>> execNodes;
         std::mutex execMutex;

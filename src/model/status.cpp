@@ -7,7 +7,7 @@ void Model::to_json(json &j, const NodeStatus &p)
 
 void Model::to_json(json &j, const Status &p)
 {
-    j = json{{"id", p.id}, {"name", p.name}, {"run", p.run}, {"nodes", p.nodes}};
+    j = json{{"id", p.id}, {"name", p.name}, {"revision", p.revision}, {"run", p.run}, {"nodes", p.nodes}};
 }
 
 void Model::IK::from_json(const json &j, Pose &p)

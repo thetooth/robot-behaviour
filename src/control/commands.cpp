@@ -14,6 +14,13 @@ bool Control::NC::sendStop()
     return publish("motion.command", j);
 }
 
+bool Control::NC::sendReset()
+{
+    json j = R"({"command": "reset"})"_json;
+
+    return publish("motion.command", j);
+}
+
 bool Control::NC::sendMoveTo(Model::IK::Pose pose)
 {
     json j = R"({"command": "goto"})"_json;
