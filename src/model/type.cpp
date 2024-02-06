@@ -10,6 +10,10 @@ void Model::from_json(const json &j, Type &t)
     {
         t = Type::End;
     }
+    else if (j == "nested")
+    {
+        t = Type::Nested;
+    }
     else if (j == "selector")
     {
         t = Type::Selector;
@@ -18,9 +22,9 @@ void Model::from_json(const json &j, Type &t)
     {
         t = Type::Sequence;
     }
-    else if (j == "action")
+    else if (j == "repeater")
     {
-        t = Type::Action;
+        t = Type::Repeater;
     }
     else if (j == "condition")
     {

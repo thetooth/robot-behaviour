@@ -15,9 +15,10 @@ namespace Model
     {
         Start,
         End,
+        Nested,
         Selector,
         Sequence,
-        Action,
+        Repeater,
         Condition,
         MoveTo,
         PickUp
