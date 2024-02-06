@@ -2,7 +2,8 @@
 
 void BT::Manager::sendNodeStatus()
 {
-    auto status = Model::Status{.id = getID(), .name = getName(), .revision = revision, .run = run};
+    auto status = Model::Status{
+        .id = getID(), .name = getName(), .revision = revision, .run = run, .alarm = alarm, .lastFault = lastFault};
     for (auto &[id, node] : execNodes)
     {
         status.nodes.push_back({.id = id, .status = int(node->getStatus())});

@@ -33,7 +33,7 @@ namespace BT
         std::string getDescription() const;
         void load(std::string id);
         std::pair<int64_t, Model::Behaviour> getBehaviour(std::string id);
-        BrainTree::BehaviorTree getExecutionTree(Model::Behaviour behaviour);
+        BrainTree::BehaviorTree getExecutionTree(Model::Behaviour behaviour, int depth, std::string nestedPrefix = "");
 
         void receiveStatus(json payload);
         void receiveCommand(json payload);
@@ -56,6 +56,8 @@ namespace BT
         std::mutex execMutex;
         bool ready = false;
         bool run = false;
+        bool alarm = false;
+        std::string lastFault;
     };
 
 } // namespace BT

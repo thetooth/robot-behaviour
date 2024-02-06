@@ -38,16 +38,20 @@ std::pair<int64_t, Model::Behaviour> BT::Manager::getBehaviour(std::string id)
 void BT::Manager::load(std::string id)
 {
     execMutex.lock();
+    alarm = false;
+    lastFault.clear();
     try
     {
         auto [r, b] = Control::NC::getBehaviour(id);
-        revision = r;
         behaviour = b.get<Model::Behaviour>();
-        tree = getExecutionTree(behaviour);
+        tree = getExecutionTree(behaviour, 0);
+        revision = r;
     }
     catch (std::exception &e)
     {
         spdlog::error("Error: {}", e.what());
+        alarm = true;
+        lastFault = e.what();
         execMutex.unlock();
         return;
     }
@@ -109,4 +113,6 @@ void BT::Manager::reset()
     {
         node->reset();
     }
+    alarm = false;
+    lastFault.clear();
 }

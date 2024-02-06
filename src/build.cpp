@@ -7,18 +7,22 @@
 
 //! @brief Gets a braintree behaviour tree ready for execution
 //! @return A braintree behaviour tree
-BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b)
+BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b, int depth, std::string nestedPrefix)
 {
+    if (depth > 10)
+    {
+        throw std::runtime_error("Nested depth greater than 10, possible circular reference detected.");
+    }
+
     auto nodes = b.getNodes();
     auto edges = b.getEdges();
 
-    execNodes = std::map<std::string, std::shared_ptr<BT::Node>>();
-
     BT::BehaviorTree bt;
 
-    for (auto &[id, node] : nodes)
+    for (auto &[oid, node] : nodes)
     {
-        spdlog::debug("Node: {} type: {} data: {}", node.id, int(node.type), node.data.dump());
+        auto id = nestedPrefix + oid;
+        spdlog::debug("ExecID: {} Node: {} type: {} data: {}", id, node.id, int(node.type), node.data.dump());
         switch (node.type)
         {
         case Model::Type::Start:
@@ -41,17 +45,21 @@ BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b)
         break;
         case Model::Type::Nested: {
             const auto nid = node.data["id"].get<std::string>();
+            if (nid.empty())
+            {
+                throw std::invalid_argument("Nested node id is empty");
+            }
             auto [r, b] = getBehaviour(nid);
             spdlog::debug("Nested: {} {} rev {}", b.name, b.id, r);
-            execNodes[id] = std::make_shared<BrainTree::BehaviorTree>(getExecutionTree(b));
+            execNodes[id] = std::make_shared<BrainTree::BehaviorTree>(getExecutionTree(b, ++depth, id + "-"));
         }
         break;
         case Model::Type::MoveTo:
-            spdlog::debug("MoveTo {}", node.data.dump());
+            // spdlog::debug("MoveTo {}", node.data.dump());
             execNodes[id] = std::make_shared<BT::MoveTo>(node.data, shared_from_this());
             break;
         case Model::Type::PickUp:
-            spdlog::debug("PickUp {}", node.data.dump());
+            // spdlog::debug("PickUp {}", node.data.dump());
             execNodes[id] = std::make_shared<BT::PickUp>(node.data, shared_from_this());
             break;
         default:
@@ -63,32 +71,36 @@ BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b)
 
     for (auto &[id, edge] : edges)
     {
-        spdlog::debug("Edge: {} source: {} sourceHandle: {} target: {}", edge.id, edge.source, edge.sourceHandle,
-                      edge.target);
 
         auto &source = nodes[edge.source];
         auto &target = nodes[edge.target];
 
+        auto sid = nestedPrefix + source.id;
+        auto tid = nestedPrefix + target.id;
+
+        spdlog::debug("Edge: {} source: {} sourceHandle: {} target: {}", nestedPrefix + edge.id, sid, edge.sourceHandle,
+                      tid);
+
         switch (source.type)
         {
         case Model::Type::Start: {
-            auto n = (BT::Start *)(execNodes[source.id].get());
-            n->setChild(execNodes[target.id]);
+            auto n = (BT::Start *)(execNodes[sid].get());
+            n->setChild(execNodes[tid]);
         }
         break;
         case Model::Type::Selector: {
-            auto n = (BT::Selector *)(execNodes[source.id].get());
-            n->addChild(execNodes[target.id]);
+            auto n = (BT::Selector *)(execNodes[sid].get());
+            n->addChild(execNodes[tid]);
         }
         break;
         case Model::Type::Sequence: {
-            auto n = (BT::Sequence *)(execNodes[source.id].get());
-            n->addChild(execNodes[target.id]);
+            auto n = (BT::Sequence *)(execNodes[sid].get());
+            n->addChild(execNodes[tid]);
         }
         break;
         case Model::Type::Repeater: {
-            auto n = (BT::Repeater *)(execNodes[source.id].get());
-            n->setChild(execNodes[target.id]);
+            auto n = (BT::Repeater *)(execNodes[sid].get());
+            n->setChild(execNodes[tid]);
         }
         break;
         default:

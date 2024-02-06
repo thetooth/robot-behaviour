@@ -23,6 +23,8 @@ namespace Model
         std::string name;
         int64_t revision;
         bool run;
+        bool alarm;
+        std::string lastFault;
         std::vector<NodeStatus> nodes;
     };
     void to_json(json &j, const Status &p);
