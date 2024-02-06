@@ -9,7 +9,7 @@ namespace BT
     class Start : public Decorator
     {
       public:
-        Start([[maybe_unused]] json data, BT::Manager *m) : manager(m)
+        Start([[maybe_unused]] json data, std::shared_ptr<BT::Manager> m) : manager(m)
         {
         }
         void initialize() override
@@ -28,6 +28,6 @@ namespace BT
         }
 
       private:
-        [[maybe_unused]] BT::Manager *manager;
+        [[maybe_unused]] std::shared_ptr<BT::Manager> manager;
     };
 } // namespace BT

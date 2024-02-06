@@ -25,11 +25,11 @@ int main()
 
     signal(SIGINT, abort_handler);
 
-    std::unique_ptr<BT::Manager> b;
+    std::shared_ptr<BT::Manager> b;
     try
     {
         spdlog::info("Starting...");
-        b = std::make_unique<BT::Manager>("nats://192.168.0.107:4222");
+        b = std::make_shared<BT::Manager>("nats://192.168.0.107:4222");
     }
     catch (const std::exception &e)
     {

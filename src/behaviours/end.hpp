@@ -12,11 +12,16 @@ namespace BT
     class End : public Leaf
     {
       public:
-        End(json data, BT::Manager *m) : manager(m)
+        End(json data, std::shared_ptr<BT::Manager> m) : manager(m)
         {
             shouldContinue = data.value("continue", false);
         }
 
+        //! @brief End the execution
+        //!
+        //! If the continue flag is set, returns success, otherwise sends a stop command to the controller.
+        //!
+        //! @return Node::Status
         Status update() override
         {
             spdlog::trace("End");
@@ -24,6 +29,7 @@ namespace BT
             {
                 return Node::Status::Success;
             }
+
             manager->stop();
 
             return Node::Status::Success;
@@ -35,7 +41,7 @@ namespace BT
         }
 
       private:
-        BT::Manager *manager;
+        std::shared_ptr<BT::Manager> manager;
         bool shouldContinue;
     };
 } // namespace BT

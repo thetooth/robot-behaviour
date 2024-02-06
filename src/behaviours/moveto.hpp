@@ -1,33 +1,34 @@
 #pragma once
 
-#include <chrono>
-
 #include <BrainTree.hpp>
 #include <spdlog/spdlog.h>
 
 namespace BT
 {
     using namespace BrainTree;
-    using namespace std::literals::chrono_literals;
+
     class MoveTo : public Leaf
     {
       public:
-        MoveTo(json data, BT::Manager *m) : manager(m)
+        MoveTo(json data, std::shared_ptr<BT::Manager> m) : manager(m)
         {
             pose = data["pose"].get<Model::IK::Pose>();
         }
+
         void initialize() override
         {
-            spdlog::debug("MoveTo {} {} {} {}", pose.x, pose.y, pose.z, pose.r);
-            startTimestamp = std::chrono::system_clock::now().time_since_epoch();
             hasMoved = false;
         }
+
+        //! @brief Move to a given pose
+        //!
+        //! If an alarm is set returns failure, otherwise returns success when the robot is in position,
+        //! If the robot is not in position, command the controller to move to the given pose and return running.
+        //!
+        //! @return Node::Status
         Status update() override
         {
-            spdlog::trace("MoveTo {} {} {} {}", pose.x, pose.y, pose.z, pose.r);
-
-            if (manager->status.alarm ||
-                std::chrono::system_clock::now().time_since_epoch() - startTimestamp > MOVE_TIMEOUT)
+            if (manager->status.alarm)
             {
                 hasMoved = false;
                 return Node::Status::Failure;
@@ -35,7 +36,7 @@ namespace BT
 
             if (manager->status.run)
             {
-                if (inPosition())
+                if (manager->inPosition(pose))
                 {
                     hasMoved = false;
                     return Node::Status::Success;
@@ -55,27 +56,9 @@ namespace BT
             return Node::Status::Invalid;
         }
 
-        bool inPosition()
-        {
-            auto otg = manager->status.otg.result == 1;
-            auto currentPose = manager->status.pose;
-            if (compareAxis(currentPose.x, pose.x) && compareAxis(currentPose.y, pose.y) &&
-                compareAxis(currentPose.z, pose.z) && compareAxis(currentPose.r, pose.r) && otg)
-            {
-                return true;
-            }
-            return false;
-        }
-        bool compareAxis(double a, double b, double threshold = 0.01)
-        {
-            return std::abs(a - b) < threshold;
-        }
-
       private:
         Model::IK::Pose pose;
-        BT::Manager *manager;
+        std::shared_ptr<BT::Manager> manager;
         bool hasMoved = false;
-        std::chrono::nanoseconds startTimestamp;
-        std::chrono::nanoseconds MOVE_TIMEOUT = 1s;
     };
 } // namespace BT

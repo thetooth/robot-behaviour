@@ -1,35 +1,38 @@
 #pragma once
 
-#include <chrono>
-
 #include <BrainTree.hpp>
 #include <spdlog/spdlog.h>
 
 namespace BT
 {
     using namespace BrainTree;
-    using namespace std::literals::chrono_literals;
+
+    //! @brief Pick up an object
+    //!
+    //! Starting at the current position, move to the given height, then return to the original position.
+    //!
+    //! @param data
+    //! @param m
     class PickUp : public Leaf
     {
       public:
-        PickUp(json data, BT::Manager *m) : manager(m)
+        PickUp(json data, std::shared_ptr<BT::Manager> m) : manager(m)
         {
             height = data["height"].get<double>();
         }
+
         void initialize() override
         {
             step = 0;
             origin = manager->status.pose;
             target = origin;
             target.z = height;
-            spdlog::debug("PickUp {} {} {} {}", target.x, target.y, target.z, target.r);
-            startTimestamp = std::chrono::system_clock::now().time_since_epoch();
             hasMoved = false;
         }
+
         Status update() override
         {
-            if (manager->status.alarm ||
-                std::chrono::system_clock::now().time_since_epoch() - startTimestamp > MOVE_TIMEOUT)
+            if (manager->status.alarm)
             {
                 hasMoved = false;
                 return Node::Status::Failure;
@@ -37,16 +40,17 @@ namespace BT
 
             if (manager->status.run)
             {
-                // spdlog::debug("PickUp {} {} {} {}", step, hasMoved, manager->inPosition(target), target.z);
                 if (hasMoved && manager->inPosition(target))
                 {
                     step++;
                     hasMoved = false;
                     target = origin;
+
                     if (step > 1)
                     {
                         return Node::Status::Success;
                     }
+
                     return Node::Status::Running;
                 }
                 else if (!hasMoved)
@@ -80,9 +84,7 @@ namespace BT
         int step;
         Model::IK::Pose origin;
         Model::IK::Pose target;
-        BT::Manager *manager;
+        std::shared_ptr<BT::Manager> manager;
         bool hasMoved = false;
-        std::chrono::nanoseconds startTimestamp;
-        std::chrono::nanoseconds MOVE_TIMEOUT = 1s;
     };
 } // namespace BT
