@@ -179,7 +179,7 @@ namespace BrainTree
             return isSuccess() || isFailure();
         }
 
-        void reset()
+        virtual void reset()
         {
             status = Status::Invalid;
         }
@@ -473,7 +473,7 @@ namespace BrainTree
     // The StatefulSelector composite ticks each child node in order, and remembers what child it prevously tried to
     // tick. If a child succeeds or runs, the stateful selector returns the same status. In the next tick, it will try
     // to run the next child or start from the beginning again. If all children fails, only then does the stateful
-    // selector fail.
+    // selector fail. If reset is called on the stateful selector, it will start from the beginning.
     class StatefulSelector : public Composite
     {
       public:
@@ -496,12 +496,18 @@ namespace BrainTree
             it = children.begin();
             return Status::Failure;
         }
+
+        void reset() override
+        {
+            it = children.begin();
+            Node::reset();
+        }
     };
 
     // The StatefulSequence composite ticks each child node in order, and remembers what child it prevously tried to
     // tick. If a child fails or runs, the stateful sequence returns the same status. In the next tick, it will try to
     // run the next child or start from the beginning again. If all children succeeds, only then does the stateful
-    // sequence succeed.
+    // sequence succeed. If reset is called on the stateful sequence, it will start from the beginning.
     class StatefulSequence : public Composite
     {
       public:
@@ -523,6 +529,12 @@ namespace BrainTree
 
             it = children.begin();
             return Status::Success;
+        }
+
+        void reset() override
+        {
+            it = children.begin();
+            Node::reset();
         }
     };
 
@@ -660,9 +672,14 @@ namespace BrainTree
 
         Status update() override
         {
-            child->tick();
+            auto s = child->tick();
 
-            if (limit > 0 && ++counter == limit)
+            if (s == Status::Success)
+            {
+                counter++;
+            }
+
+            if (limit > 0 && counter == limit)
             {
                 return Status::Success;
             }
