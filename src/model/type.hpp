@@ -20,6 +20,7 @@ namespace Model
         Sequence,
         Repeater,
         Condition,
+        Delay,
         MoveTo,
         PickUp
     };

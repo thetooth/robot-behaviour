@@ -1,5 +1,6 @@
 #include "behaviour.hpp"
 
+#include "behaviours/delay.hpp"
 #include "behaviours/end.hpp"
 #include "behaviours/moveto.hpp"
 #include "behaviours/pickup.hpp"
@@ -43,30 +44,29 @@ BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b, int depth, st
             execNodes[id] = std::make_shared<BT::Repeater>(count);
         }
         break;
+        case Model::Type::Delay:
+            execNodes[id] = std::make_shared<BT::Delay>(node.data);
+            break;
         case Model::Type::Nested: {
-            const auto nid = node.data["id"].get<std::string>();
+            const auto nid = node.data.value("id", std::string());
             if (nid.empty())
             {
                 throw std::invalid_argument("Nested node id is empty");
             }
             auto [r, b] = getBehaviour(nid);
-            spdlog::debug("Nested: {} {} rev {}", b.name, b.id, r);
             execNodes[id] = std::make_shared<BrainTree::BehaviorTree>(getExecutionTree(b, ++depth, id + "-"));
         }
         break;
         case Model::Type::MoveTo:
-            // spdlog::debug("MoveTo {}", node.data.dump());
             execNodes[id] = std::make_shared<BT::MoveTo>(node.data, shared_from_this());
             break;
         case Model::Type::PickUp:
-            // spdlog::debug("PickUp {}", node.data.dump());
             execNodes[id] = std::make_shared<BT::PickUp>(node.data, shared_from_this());
             break;
         default:
             throw std::invalid_argument(fmt::format("Unknown node type: {}", int(node.type)));
             break;
         }
-        // execNodes[id]->setBlackboard(bt.blackboard);
     }
 
     for (auto &[id, edge] : edges)
@@ -100,6 +100,11 @@ BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b, int depth, st
         break;
         case Model::Type::Repeater: {
             auto n = (BT::Repeater *)(execNodes[sid].get());
+            n->setChild(execNodes[tid]);
+        }
+        break;
+        case Model::Type::Delay: {
+            auto n = (BT::Delay *)(execNodes[sid].get());
             n->setChild(execNodes[tid]);
         }
         break;

@@ -30,6 +30,10 @@ void Model::from_json(const json &j, Type &t)
     {
         t = Type::Condition;
     }
+    else if (j == "delay")
+    {
+        t = Type::Delay;
+    }
     else if (j == "moveTo")
     {
         t = Type::MoveTo;
