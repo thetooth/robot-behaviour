@@ -19,7 +19,9 @@ void BT::Manager::execute()
     execMutex.unlock();
     if (status == BrainTree::Node::Status::Failure)
     {
-        spdlog::warn("Behaviour tree failed");
+        alarm = true;
+        lastFault = "Stopped due to failure";
         run = false;
+        spdlog::warn(lastFault);
     }
 }

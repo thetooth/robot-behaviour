@@ -67,12 +67,19 @@ bool Control::NC::publish(std::string subject, json message)
 
 std::pair<int64_t, nlohmann::json> Control::NC::getBehaviour(std::string id)
 {
+    if (id.empty())
+    {
+        throw std::invalid_argument("Behaviour id is blank");
+    }
+    if (kv == nullptr)
+    {
+        throw std::runtime_error("Key-value store is not initialized");
+    }
     kvEntry *res = nullptr;
     auto jsStatus = kvStore_Get(&res, kv, ("data." + id).c_str());
     if (jsStatus != NATS_OK)
     {
-        spdlog::critical("Failed to get JetStream key-value store entries");
-        return json();
+        throw std::runtime_error("Failed to load behaviour, perhaps you forgot to save?");
     }
     auto rev = kvEntry_Revision(res);
     auto payload = json::parse(kvEntry_ValueString(res));
