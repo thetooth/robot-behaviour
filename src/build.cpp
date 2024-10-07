@@ -1,5 +1,6 @@
 #include "behaviour.hpp"
 
+#include "behaviours/condition.hpp"
 #include "behaviours/delay.hpp"
 #include "behaviours/end.hpp"
 #include "behaviours/moveto.hpp"
@@ -33,6 +34,16 @@ BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b, int depth, st
         case Model::Type::End:
             execNodes[id] = std::make_shared<BT::End>(node.data, shared_from_this());
             break;
+        case Model::Type::Nested: {
+            const auto nid = node.data.value("id", std::string());
+            if (nid.empty())
+            {
+                throw std::invalid_argument("Nested node id is empty");
+            }
+            auto [r, b] = getBehaviour(nid);
+            execNodes[id] = std::make_shared<BrainTree::BehaviorTree>(getExecutionTree(b, ++depth, id + "-"));
+        }
+        break;
         case Model::Type::Selector:
             execNodes[id] = std::make_shared<BT::Selector>();
             break;
@@ -44,19 +55,12 @@ BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b, int depth, st
             execNodes[id] = std::make_shared<BT::Repeater>(count);
         }
         break;
+        case Model::Type::Condition:
+            execNodes[id] = std::make_shared<BT::Condition>(node.data, shared_from_this());
+            break;
         case Model::Type::Delay:
             execNodes[id] = std::make_shared<BT::Delay>(node.data);
             break;
-        case Model::Type::Nested: {
-            const auto nid = node.data.value("id", std::string());
-            if (nid.empty())
-            {
-                throw std::invalid_argument("Nested node id is empty");
-            }
-            auto [r, b] = getBehaviour(nid);
-            execNodes[id] = std::make_shared<BrainTree::BehaviorTree>(getExecutionTree(b, ++depth, id + "-"));
-        }
-        break;
         case Model::Type::MoveTo:
             execNodes[id] = std::make_shared<BT::MoveTo>(node.data, shared_from_this());
             break;
@@ -103,6 +107,10 @@ BT::BehaviorTree BT::Manager::getExecutionTree(Model::Behaviour b, int depth, st
             n->setChild(execNodes[tid]);
         }
         break;
+        case Model::Type::Condition: {
+            auto n = (BT::Condition *)(execNodes[sid].get());
+            n->setChild(execNodes[tid]);
+        }
         case Model::Type::Delay: {
             auto n = (BT::Delay *)(execNodes[sid].get());
             n->setChild(execNodes[tid]);

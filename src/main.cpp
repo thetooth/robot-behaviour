@@ -4,6 +4,7 @@
 #include <signal.h>
 
 #include <BrainTree.hpp>
+#include <chaiscript/chaiscript.hpp>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
@@ -26,10 +27,11 @@ int main()
     signal(SIGINT, abort_handler);
 
     std::shared_ptr<BT::Manager> b;
+    auto chai = std::make_shared<chaiscript::ChaiScript>();
     try
     {
         spdlog::info("Starting...");
-        b = std::make_shared<BT::Manager>("nats://192.168.0.107:4222");
+        b = std::make_shared<BT::Manager>("nats://192.168.0.107:4222", chai);
     }
     catch (const std::exception &e)
     {

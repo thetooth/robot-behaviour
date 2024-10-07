@@ -2,6 +2,7 @@
 
 void BT::Manager::execute()
 {
+
     static size_t counter = 0;
 
     if (counter++ % 10 == 0)
@@ -15,8 +16,8 @@ void BT::Manager::execute()
 
     execMutex.lock();
     auto status = tree.tick();
-
     execMutex.unlock();
+
     if (status == BrainTree::Node::Status::Failure)
     {
         alarm = true;

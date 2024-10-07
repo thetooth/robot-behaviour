@@ -107,6 +107,8 @@
     "valarray": "cpp",
     "strstream": "cpp",
     "future": "cpp",
-    "cfenv": "cpp"
+    "cfenv": "cpp",
+    "regex": "cpp",
+    "csignal": "cpp"
   }
 }

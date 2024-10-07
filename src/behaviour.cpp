@@ -1,7 +1,17 @@
 #include "behaviour.hpp"
 
-BT::Manager::Manager(std::string url) : Control::NC(url)
+BT::Manager::Manager(std::string url, std::shared_ptr<chaiscript::ChaiScript> runtime) : Control::NC(url), chai(runtime)
 {
+    chai->add(chaiscript::var(std::ref(status.run)), "run");
+    chai->add(chaiscript::var(std::ref(status.alarm)), "alarm");
+
+    chai->add(chaiscript::var(std::ref(status.pose.x)), "x");
+    chai->add(chaiscript::var(std::ref(status.pose.y)), "y");
+    chai->add(chaiscript::var(std::ref(status.pose.z)), "z");
+    chai->add(chaiscript::var(std::ref(status.pose.r)), "r");
+
+    chai->add(chaiscript::fun(&BrainTree::Blackboard::setDouble, &blackboard), "setDouble");
+    chai->add(chaiscript::fun(&BrainTree::Blackboard::getDouble, &blackboard), "getDouble");
 }
 
 BT::Manager::~Manager()
@@ -39,7 +49,7 @@ void BT::Manager::load(std::string id)
 {
     execMutex.lock();
     alarm = false;
-    lastFault.clear();
+    lastFault = "";
     try
     {
         auto [r, b] = Control::NC::getBehaviour(id);
@@ -114,5 +124,5 @@ void BT::Manager::reset()
         node->reset();
     }
     alarm = false;
-    lastFault.clear();
+    lastFault = "";
 }

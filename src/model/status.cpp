@@ -69,4 +69,6 @@ void Model::Robot::from_json(const json &j, Status &p)
     p.otg = j.at("otg").get<OTGStatus>();
     p.ethercat = j.at("ethercat").get<EtherCATStatus>();
     p.pose = j.at("pose").get<IK::Pose>();
+
+    p.original = j;
 }

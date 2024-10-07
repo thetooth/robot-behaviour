@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <BrainTree.hpp>
+#include <chaiscript/chaiscript.hpp>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
@@ -24,7 +25,7 @@ namespace BT
     class Manager : public Control::NC, public std::enable_shared_from_this<Manager>
     {
       public:
-        Manager(std::string url);
+        Manager(std::string url, std::shared_ptr<chaiscript::ChaiScript> runtime);
         ~Manager();
 
         int64_t getRevision() const;
@@ -45,6 +46,8 @@ namespace BT
 
         Model::Robot::Status status;
         Model::Behaviour behaviour;
+        BrainTree::Blackboard blackboard;
+        std::shared_ptr<chaiscript::ChaiScript> chai;
 
       private:
         void execute();
@@ -57,7 +60,7 @@ namespace BT
         bool ready = false;
         bool run = false;
         bool alarm = false;
-        std::string lastFault;
+        std::string lastFault = "No fault";
     };
 
 } // namespace BT

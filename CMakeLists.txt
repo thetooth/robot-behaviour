@@ -37,7 +37,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 endif()
 
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/")
@@ -48,9 +47,15 @@ add_subdirectory(src)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/nats.c)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/json)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ChaiScript)
 
 target_include_directories(${PROJECT_NAME} PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR}/braintree)
 target_include_directories(${PROJECT_NAME} PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR}/spdlog/include)
+target_include_directories(${PROJECT_NAME} PRIVATE  ${CMAKE_CURRENT_SOURCE_DIR}/ChaiScript/include)
+
+find_package(Lua REQUIRED)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${LUA_INCLUDE_DIR})
 
 target_link_libraries(
     ${PROJECT_NAME}

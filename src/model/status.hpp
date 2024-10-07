@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
 
 namespace Model
 {
@@ -70,6 +71,7 @@ namespace Model
 
         struct Status
         {
+          public:
             bool run;
             bool alarm;
             bool needsHoming;
@@ -77,6 +79,8 @@ namespace Model
             OTGStatus otg;
             EtherCATStatus ethercat;
             IK::Pose pose;
+
+            json original;
         };
         void from_json(const json &j, Status &p);
     } // namespace Robot
